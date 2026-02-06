@@ -85,12 +85,18 @@ python src/organize_datasets.py
 The final Parquet datasets are stored in `data/datasets_parquet` and are ready for model training.
 
 ### Dataset Links
+*   **Parquet Datasets (Embeddings & Metadata)**: [OSF Repository (Anonymous View-Only)](https://osf.io/nceaj/overview?view_only=303d78b2d8b74316968e1b6065a99ee8)
+    *   Contains the full processed datasets including 1024-dim dense embeddings and 100k-dim sparse vectors.
 *   **Judicial Yuan Open Data**: https://opendata.judicial.gov.tw/
 *   **HuggingFace Model**: https://huggingface.co/intfloat/multilingual-e5-large
 
 ## Empirical Studies
 
 This section covers the statistical validation and visualization scripts used in the paper. These scripts operate on the clean CSV datasets (`data/datasets_csv`).
+
+> **Note on Datasets**: The empirical scripts run on lightweight CSV files containing metadata (disputability scores, categories) but not the heavy embeddings. If you downloaded the **Parquet** datasets from the link above, they contain all necessary columns. You can either:
+> 1.  Run the scripts directly on the Parquet files (requires minor script modification to use `pd.read_parquet`).
+> 2.  Or use the subset of CSV files provided in this repository under `data/datasets_csv` (if available) or generate them using the Preprocessing pipeline.
 
 ### Statistical Tests
 *   `src/analyze_disputability_geometric_test.py`: Performs **Goodness-of-Fit** tests to check if the disputability scores follow a Geometric distribution.
@@ -106,3 +112,38 @@ python src/analyze_disputability_mvr.py
 ```
 
 ## Model Training
+
+This section describes how to reproduce the deep survival analysis experiments (SHN model).
+
+#### 1. Data Splitting
+Split the continuous Parquet datasets into Train, Validation, and Test sets (8:1:1).
+```bash
+python src/split_datasets.py
+```
+This will create split files in `data/datasets_split`.
+
+#### 2. Clustering (Prototype Generation)
+We use K-Means clustering on the training set embeddings to create "Semantic Hurdles".
+```bash
+python src/apply_clustering.py
+```
+This script applies the pre-determined best K values (e.g., K=151 for Criminal cases) and assigns cluster IDs to all samples. Results are saved in `clustering_results/`.
+
+*(Optional) To search for the optimal K yourself, use `python src/optimized_clustering.py`.*
+
+#### 3. Train SHN Model
+Train the Semantic Hurdle Network (SHN) using the split data and cluster assignments.
+```bash
+python src/train_shn.py
+```
+This script will:
+1.  Train the model for each category (Civil, Criminal, Administrative).
+2.  Optimize the decision threshold.
+3.  Evaluate on the Test set.
+4.  Generate logs in the project root (`log_SHN_*.txt`).
+
+#### 4. Result Summarization
+Parse the training logs and generate the comparison table (Table 2 in the paper).
+```bash
+python src/print_table.py
+```

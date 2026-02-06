@@ -1,0 +1,14 @@
+pandas>=2.0.0
+selenium
+rarfile
+tqdm
+numpy<2.0.0
+scikit-learn>=1.3.0
+torch>=2.0.0
+joblib
+matplotlib>=3.7.0
+faiss-cpu
+scipy
+sentence-transformers
+jieba
+xgboost
