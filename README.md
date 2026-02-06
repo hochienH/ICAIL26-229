@@ -90,4 +90,19 @@ The final Parquet datasets are stored in `data/datasets_parquet` and are ready f
 
 ## Empirical Studies
 
+This section covers the statistical validation and visualization scripts used in the paper. These scripts operate on the clean CSV datasets (`data/datasets_csv`).
+
+### Statistical Tests
+*   `src/analyze_disputability_geometric_test.py`: Performs **Goodness-of-Fit** tests to check if the disputability scores follow a Geometric distribution.
+*   `src/analyze_disputability_mvr.py`: Calculates the **Mean-Variance Ratio (Dispersion)** for both overall cases and survivors (tail), generating the LaTeX code for **Table 1**.
+*   `src/analyze_disputability_ratios.py`: Calculates the empirical **Hazard Rates** (fraction of cases terminating at each instance) up to the 4th instance, generating the LaTeX code for **Table 2**.
+
+### Visualization
+*   `src/analyze_jtitle_high_disp.py`: Analyzes high-disputability case types, listing the top contributors to the "Survivor" group (e.g., Corruption, Homicide) and plotting their distributions.
+
+To run any of these analyses:
+```bash
+python src/analyze_disputability_mvr.py
+```
+
 ## Model Training
