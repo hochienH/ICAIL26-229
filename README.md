@@ -50,7 +50,43 @@ This script will:
 2.  **Create Final Datasets**: Filter out invalid entries and generate the final datasets in `data/datasets_csv` using `create_final_datasets.py`.
 
 ### Second Part (For Model Training)
+This section explains how to generate embeddings from the raw judgment texts for the deep survival analysis model.
+
+#### 1. Text Extraction
+Extract the full text of judgments from the RAR archives.
+```bash
+python src/extract_judgements.py
+```
+This script reads the CSV files generated in Part 1, locates the corresponding monthly RAR archives in `data/raw_rar`, and extracts the JSON judgment files to `data/judgements`.
+
+#### 2. TF-IDF Training
+Train a TF-IDF model to extract keywords and representative terms.
+```bash
+python src/train_tfidf.py
+```
+The trained model will be saved to `models/tfidf_model.joblib`.
+
+#### 3. Embedding Generation
+Generate dense vector representations of the judgments.
+```bash
+python src/generate_embeddings.py
+```
+This script performs the following pre-processing steps before embedding:
+1.  **Content Extraction**: Extracts the **judgment content** (判決內容) from the raw JSON, specifically targeting the text between the "Main Text" (主文) header and the closing date. This captures the main body (including ruling, facts, and reasoning) while excluding irrelevant headers and footers.
+2.  **Sentence Segmentation**: Splits the extracted content into sentences using the full-width period (`。`) as a delimiter.
+
+We use the **intfloat/multilingual-e5-large** model to generate embeddings for each sentence, followed by mean pooling to obtain the final document embedding. The script processes the JSON files in `data/judgements` and saves the embeddings to `data/embeddings_output`.
+
+#### 4. Dataset Organization
+Combine the structured metadata (from `data/datasets_csv`) and the generated embeddings into Parquet files.
+```bash
+python src/organize_datasets.py
+```
+The final Parquet datasets are stored in `data/datasets_parquet` and are ready for model training.
+
 ### Dataset Links
+*   **Judicial Yuan Open Data**: https://opendata.judicial.gov.tw/
+*   **HuggingFace Model**: https://huggingface.co/intfloat/multilingual-e5-large
 
 ## Empirical Studies
 
