@@ -2,6 +2,30 @@
 The Source Codes and Datasets of the Paper "How Long Will Your Case Stay Alive? Survival Analysis Beyond Instances"
 ## Requirements
 
+The code requires **Python 3.8+**. The core dependencies include:
+```
+pandas>=2.0.0
+selenium
+rarfile
+tqdm
+numpy<2.0.0
+scikit-learn>=1.3.0
+torch>=2.0.0
+joblib
+matplotlib>=3.7.0
+faiss-cpu
+scipy
+sentence-transformers
+jieba
+xgboost
+```
+
+To install all dependencies, run:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Data Preprocessing
 
 ### First Part (For Empirical Studies)
